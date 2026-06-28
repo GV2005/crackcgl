@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrackCGL — SSC CGL 2025–26 Free Mock Test Platform</title>
+<meta name="description" content="India's best free SSC CGL 2025-26 mock test platform. Tier 1, Tier 2, subject-wise practice. Real exam experience with detailed solutions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Supabase JS SDK (CDN — no npm needed) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ===================================================
+   DESIGN TOKENS
+=================================================== */
+:root{
+  --navy:#0A0F2E;--navy2:#111937;--navy3:#1a2550;
+  --blue:#2563EB;--blue2:#3B82F6;--blue3:#60A5FA;
+  --amber:#F59E0B;--amber2:#D97706;
+  --green:#10B981;--green2:#059669;
+  --red:#EF4444;--red2:#DC2626;
+  --white:#fff;
+  --g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;
+  --g300:#CBD5E1;--g400:#94A3B8;--g500:#64748B;
+  --g600:#475569;--g700:#334155;--g800:#1E293B;--g900:#0F172A;
+  --fd:'Space Grotesk',sans-serif;
+  --fb:'Inter',sans-serif;
+  --r:8px;--rl:14px;--rxl:20px;
+  --sh:0 2px 12px rgba(0,0,0,.07);
+  --shl:0 6px 32px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fb);background:var(--g50);color:var(--g900);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--fb);cursor:pointer}
+
+/* ===================================================
+   SCREENS
+=================================================== */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+#examScreen.active{display:flex;flex-direction:column}
+
+/* ===================================================
+   NAV
+=================================================== */
+.nav{
+  background:var(--navy);padding:0 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 16px rgba(0,0,0,.25)
+}
+.logo{font-family:var(--fd);font-size:20px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:-.3px}
+.logo span{color:var(--blue3)}
+.nav-r{display:flex;align-items:center;gap:.75rem}
+.nav-link{font-size:13px;color:rgba(255,255,255,.65);padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:500;transition:.15s}
+.nav-link:hover,.nav-link.on{color:#fff;background:rgba(255,255,255,.1)}
+.nav-auth-btn{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:.2s}
+.btn-login{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-login:hover{background:rgba(255,255,255,.18)}
+.btn-signup{background:var(--blue);color:#fff}
+.btn-signup:hover{background:var(--blue2)}
+.user-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);padding:5px 12px 5px 5px;border-radius:20px;cursor:pointer}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.user-name{font-size:13px;color:#fff;font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===================================================
+   HERO
+=================================================== */
+.hero{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 55%,#1a3070 100%);
+  color:#fff;padding:5rem 1.5rem 4rem;text-align:center;position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;top:-40%;left:-15%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(37,99,235,.18) 0%,transparent 70%);pointer-events:none
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(37,99,235,.22);border:1px solid rgba(96,165,250,.35);
+  color:var(--blue3);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;margin-bottom:1.25rem
+}
+.hero h1{font-family:var(--fd);font-size:clamp(30px,5vw,56px);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.hero h1 em{color:var(--amber);font-style:normal}
+.hero p{font-size:17px;color:rgba(255,255,255,.7);max-width:580px;margin:0 auto 2rem;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:2.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.hs-item .num{font-family:var(--fd);font-size:28px;font-weight:700}
+.hs-item .lbl{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+.hero-cta{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+
+/* ===================================================
+   BUTTONS
+=================================================== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 28px;border-radius:var(--r);font-size:15px;font-weight:600;border:none;transition:.2s;cursor:pointer}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.35)}
+.btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25)}.btn-secondary:hover{background:rgba(255,255,255,.18)}
+.btn-white{background:#fff;color:var(--navy);border:none}.btn-white:hover{background:var(--g100)}
+.btn-sm{padding:8px 18px;font-size:13px}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green2)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red2)}
+.btn-ghost{background:white;color:var(--g700);border:1.5px solid var(--g200)}.btn-ghost:hover{border-color:var(--g400)}
+.btn-amber{background:#FFFBEB;color:var(--amber2);border:1.5px solid var(--amber)}.btn-amber:hover{background:#FEF3C7}
+
+/* ===================================================
+   CARDS + GRID
+=================================================== */
+.section{padding:2.5rem 1.5rem;max-width:1180px;margin:0 auto}
+.sec-title{font-family:var(--fd);font-size:22px;font-weight:700;margin-bottom:.25rem}
+.sec-sub{font-size:14px;color:var(--g500);margin-bottom:1.5rem}
+.card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.25rem;transition:.2s}
+.card:hover{border-color:var(--blue);box-shadow:0 6px 24px rgba(37,99,235,.1)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.tc-icon{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:.9rem}
+.tc h3{font-family:var(--fd);font-size:16px;font-weight:700;margin-bottom:.35rem}
+.tc p{font-size:13px;color:var(--g500);line-height:1.6;margin-bottom:.85rem}
+.chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.03em}
+.ch-b{background:#EFF6FF;color:#1D4ED8}.ch-a{background:#FFFBEB;color:#B45309}
+.ch-g{background:#F0FDF4;color:#166534}.ch-r{background:#FEF2F2;color:#991B1B}
+.ch-p{background:#FAF5FF;color:#6B21A8}
+.tc-chips{display:flex;gap:.5rem;flex-wrap:wrap}
+.featured-badge{
+  position:absolute;top:12px;right:-24px;
+  background:var(--blue);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 30px;transform:rotate(45deg);letter-spacing:.1em
+}
+.tc.featured{border-color:var(--blue);background:linear-gradient(135deg,#EFF6FF 0%,#fff 100%);position:relative;overflow:hidden}
+
+/* ===================================================
+   EXAM SCREEN
+=================================================== */
+.exam-header{
+  background:var(--navy);color:#fff;padding:0 1.25rem;
+  height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  position:sticky;top:0;z-index:150
+}
+.exam-title-text{font-family:var(--fd);font-size:14px;font-weight:600;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.timer{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:var(--r);padding:7px 14px;
+  font-family:'Courier New',monospace;font-size:20px;font-weight:700;letter-spacing:2px;transition:.3s
+}
+.timer.warn{background:rgba(245,158,11,.2);border-color:var(--amber);color:var(--amber)}
+.timer.danger{background:rgba(239,68,68,.2);border-color:var(--red);color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.prog-bar{height:3px;background:var(--g200)}
+.prog-fill{height:100%;background:var(--blue);transition:width .4s}
+.exam-body{
+  flex:1;display:grid;grid-template-columns:1fr 260px;
+  gap:1.25rem;max-width:1180px;margin:0 auto;width:100%;padding:1.25rem 1.25rem 2rem
+}
+
+/* Question Panel */
+.qpanel{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.75rem;min-height:460px}
+.q-meta{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem}
+.q-num{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fd)}
+.q-subj{font-size:11px;color:var(--g500);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.q-marks{margin-left:auto;font-size:12px;color:var(--g500)}
+.q-marks b{color:var(--green)}
+.q-text{font-size:16px;line-height:1.8;color:var(--g900);margin-bottom:1.5rem;font-weight:500}
+.options{display:flex;flex-direction:column;gap:.65rem}
+.opt{
+  display:flex;align-items:flex-start;gap:.9rem;
+  padding:13px 16px;border:2px solid var(--g200);border-radius:var(--r);
+  cursor:pointer;transition:.15s;background:#fff
+}
+.opt:hover{border-color:var(--blue);background:#EFF6FF}
+.opt.sel{border-color:var(--blue);background:#EFF6FF}
+.opt.correct{border-color:var(--green);background:#F0FDF4}
+.opt.wrong{border-color:var(--red);background:#FEF2F2}
+.opt-lbl{
+  min-width:26px;height:26px;border-radius:50%;border:2px solid var(--g300);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  transition:.15s;flex-shrink:0;margin-top:1px
+}
+.opt.sel .opt-lbl{border-color:var(--blue);background:var(--blue);color:#fff}
+.opt.correct .opt-lbl{border-color:var(--green);background:var(--green);color:#fff}
+.opt.wrong .opt-lbl{border-color:var(--red);background:var(--red);color:#fff}
+.opt-txt{font-size:14px;line-height:1.55;color:var(--g800)}
+.q-actions{
+  display:flex;gap:.6rem;margin-top:1.5rem;
+  padding-top:1.25rem;border-top:1.5px solid var(--g100);flex-wrap:wrap
+}
+.sol-panel{
+  margin-top:1.25rem;padding:1rem;
+  background:#F0FDF4;border:2px solid var(--green);border-radius:var(--r);display:none
+}
+.sol-panel.show{display:block}
+.sol-title{font-size:13px;font-weight:700;color:var(--green2);margin-bottom:.4rem}
+.sol-text{font-size:13px;color:var(--g700);line-height:1.65}
+
+/* Sidebar */
+.sidebar{display:flex;flex-direction:column;gap:1rem}
+.pal-card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.1rem}
+.pal-title{font-size:13px;font-weight:700;color:var(--g800);margin-bottom:.85rem;font-family:var(--fd)}
+.sec-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.85rem}
+.sec-tab{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--g200);color:var(--g500);background:#fff;transition:.15s}
+.sec-tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pal-legend{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:.75rem}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--g500)}
+.leg-dot{width:11px;height:11px;border-radius:3px}
+.pal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.pb{
+  width:34px;height:34px;border-radius:5px;border:1.5px solid var(--g200);
+  background:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:.12s;
+  color:var(--g700);display:flex;align-items:center;justify-content:center
+}
+.pb:hover{border-color:var(--blue);color:var(--blue)}
+.pb.ans{background:var(--green);border-color:var(--green);color:#fff}
+.pb.mrk{background:var(--amber);border-color:var(--amber);color:#fff}
+.pb.nv{background:var(--g100);color:var(--g400)}
+.pb.cur{border-color:var(--navy);background:var(--navy);color:#fff;box-shadow:0 0 0 2px rgba(37,99,235,.3)}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ms{background:var(--g50);border-radius:6px;padding:9px;text-align:center}
+.ms .v{font-size:19px;font-weight:700;font-family:var(--fd)}
+.ms .l{font-size:11px;color:var(--g500);margin-top:2px}
+
+/* ===================================================
+   RESULT
+=================================================== */
+.result-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);color:#fff;padding:2.5rem 1.5rem;text-align:center}
+.score-ring{
+  width:140px;height:140px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:5px solid var(--blue2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 1.25rem
+}
+.score-ring .sn{font-family:var(--fd);font-size:36px;font-weight:700}
+.score-ring .st{font-size:13px;color:rgba(255,255,255,.55)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;padding:1.5rem;max-width:800px;margin:0 auto}
+.rs{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1rem;text-align:center}
+.rs .v{font-size:26px;font-weight:700;font-family:var(--fd);margin-bottom:4px}
+.rs .l{font-size:12px;color:var(--g500)}
+.ana-sec{max-width:800px;margin:0 auto;padding:0 1.5rem 3rem}
+.bar-row{display:grid;grid-template-columns:110px 1fr 60px;gap:.85rem;align-items:center}
+.bar-lbl{font-size:12px;font-weight:600;color:var(--g700);text-align:right}
+.bar-track{background:var(--g100);border-radius:20px;height:9px;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;transition:width 1s ease-out}
+.bar-val{font-size:12px;font-weight:700;color:var(--g700)}
+.review-item{background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);padding:1.1rem;margin-bottom:.7rem}
+
+/* ===================================================
+   DASHBOARD
+=================================================== */
+.db-grid{display:grid;grid-template-columns:1fr 260px;gap:1.25rem}
+.streak-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);color:#fff;border-radius:var(--rl);padding:1.25rem}
+.streak-num{font-size:48px;font-weight:800;font-family:var(--fd);color:var(--amber);line-height:1}
+.cal-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:.85rem}
+.cd{width:20px;height:20px;border-radius:3px;background:rgba(255,255,255,.1)}
+.cd.done{background:var(--green)}.cd.today{background:var(--amber)}
+.lb-card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.1rem}
+.lb-row{display:flex;align-items:center;gap:.65rem;padding:9px 0;border-bottom:1px solid var(--g100)}
+.lb-row:last-child{border:none}
+.lb-rank{width:22px;font-size:12px;font-weight:800;color:var(--g400);text-align:center;font-family:var(--fd)}
+.lb-rank.top{color:var(--amber)}
+.lb-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.lb-name{flex:1;font-size:13px;font-weight:600}
+.lb-score{font-size:13px;font-weight:700;color:var(--blue);font-family:var(--fd)}
+.you-row{background:#EFF6FF;border-radius:6px;padding:8px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1rem}
+.scard{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1rem;text-align:center}
+.scard .v{font-size:24px;font-weight:700;font-family:var(--fd);margin-bottom:4px}
+.scard .l{font-size:12px;color:var(--g500)}
+
+/* ===================================================
+   SYLLABUS / PRACTICE
+=================================================== */
+.pills{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.pill{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--g200);background:#fff;color:var(--g600);transition:.15s}
+.pill:hover{border-color:var(--blue);color:var(--blue)}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.9rem}
+.topic-card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.1rem;cursor:pointer;transition:.15s}
+.topic-card:hover{border-color:var(--blue);transform:translateY(-1px)}
+.topic-card h4{font-size:14px;font-weight:700;margin-bottom:.65rem;font-family:var(--fd)}
+.prog-mini{height:7px;background:var(--g100);border-radius:20px;overflow:hidden;margin-bottom:.4rem}
+.prog-mini-fill{height:100%;border-radius:20px}
+.topic-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--g500)}
+
+/* ===================================================
+   AUTH MODAL
+=================================================== */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--rxl);padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
+.modal h2{font-family:var(--fd);font-size:22px;font-weight:700;margin-bottom:.25rem}
+.modal-sub{font-size:14px;color:var(--g500);margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:.35rem;display:block}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--g200);border-radius:var(--r);font-size:15px;font-family:var(--fb);transition:.15s;outline:none}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.form-input.err{border-color:var(--red)}
+.form-err{font-size:12px;color:var(--red);margin-top:.3rem;display:none}
+.btn-full{width:100%;padding:13px;border-radius:var(--r);font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:var(--fb);transition:.2s}
+.btn-full-blue{background:var(--blue);color:#fff}.btn-full-blue:hover{background:var(--blue2)}
+.or-divider{text-align:center;font-size:13px;color:var(--g400);margin:1rem 0;position:relative}
+.or-divider::before,.or-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--g200)}
+.or-divider::before{left:0}.or-divider::after{right:0}
+.btn-google{
+  width:100%;padding:11px;border:1.5px solid var(--g200);border-radius:var(--r);
+  background:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;font-family:var(--fb)
+}
+.btn-google:hover{border-color:var(--g400);background:var(--g50)}
+.modal-switch{text-align:center;font-size:13px;color:var(--g500);margin-top:1rem}
+.modal-switch a{color:var(--blue);font-weight:600;cursor:pointer}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--g100);border:none;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g500)}
+.modal-close:hover{background:var(--g200)}
+.alert{padding:.75rem 1rem;border-radius:var(--r);font-size:13px;margin-bottom:1rem;display:none}
+.alert.err{background:#FEF2F2;color:var(--red);border:1px solid #FECACA}
+.alert.suc{background:#F0FDF4;color:var(--green2);border:1px solid #A7F3D0}
+
+/* ===================================================
+   SUBMIT CONFIRM MODAL
+=================================================== */
+#submitModal .modal h2{font-size:20px}
+.modal-actions{display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.25rem}
+
+/* ===================================================
+   INSTRUCTIONS
+=================================================== */
+.instr-wrap{max-width:760px;margin:0 auto;padding:1.5rem}
+.instr-card{background:#fff;border:1.5px solid var(--g200);border-radius:var(--rl);padding:1.5rem;margin-bottom:1rem}
+.instr-card h3{font-family:var(--fd);font-size:16px;font-weight:700;margin-bottom:.9rem;color:var(--navy)}
+.itbl{width:100%;border-collapse:collapse}
+.itbl th{background:var(--navy);color:#fff;padding:9px 12px;font-size:12px;font-weight:600;text-align:left}
+.itbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--g100)}
+.itbl tr:hover td{background:var(--g50)}
+.ilist{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.ilist li{display:flex;gap:.65rem;font-size:13px;color:var(--g700);line-height:1.6}
+.ilist li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+
+/* ===================================================
+   TOAST
+=================================================== */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  background:var(--g900);color:#fff;padding:11px 18px;
+  border-radius:var(--r);font-size:13px;font-weight:500;z-index:999;
+  transform:translateY(80px);opacity:0;transition:.3s;max-width:300px
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ===================================================
+   RESPONSIVE
+=================================================== */
+@media(max-width:768px){
+  .exam-body{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .res-stats{grid-template-columns:repeat(2,1fr)}
+  .db-grid{grid-template-columns:1fr}
+  .stat3{grid-template-columns:1fr 1fr}
+  .hero p{font-size:15px}
+  .hero-stats{gap:1.5rem}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .35s ease both}
+
+/* ===================================================
+   SUPABASE STATUS BANNER
+=================================================== */
+.setup-banner{
+  background:#FFFBEB;border-bottom:2px solid var(--amber);
+  padding:.65rem 1.5rem;font-size:13px;color:var(--amber2);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;text-align:center
+}
+.setup-banner strong{font-weight:700}
+.setup-banner.hide{display:none}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── SUPABASE SETUP BANNER (hidden once configured) ── -->
+<div class="setup-banner" id="setupBanner">
+  ⚠️ <strong>Dev Mode:</strong> Add your Supabase URL + Key in the CONFIG section of this file to enable real auth & data persistence.
+  <span style="margin-left:.5rem;cursor:pointer;text-decoration:underline" onclick="document.getElementById('setupBanner').classList.add('hide')">Dismiss</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     AUTH MODAL
+══════════════════════════════════════════════════ -->
+<div class="overlay" id="authOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <h2>Welcome back 👋</h2>
+      <div class="modal-sub">Sign in to save your progress and access your dashboard</div>
+      <div class="alert" id="loginAlert"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="loginEmail" type="email" placeholder="you@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPwd" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-full btn-full-blue" onclick="handleLogin()">Sign In</button>
+      <div class="or-divider">or</div>
+      <button class="btn-google" onclick="handleGoogleAuth()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="modal-switch">New here? <a onclick="switchAuth('register')">Create free account</a></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none">
+      <h2>Join CrackCGL 🚀</h2>
+      <div class="modal-sub">Free forever — save progress, track streaks, compete on leaderboard</div>
+      <div class="alert" id="registerAlert"></div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="regName" type="text" placeholder="Arjun Kumar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="regEmail" type="email" placeholder="you@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="regPwd" type="password" placeholder="Min. 8 characters">
+      </div>
+      <button class="btn-full btn-full-blue" onclick="handleRegister()">Create Free Account</button>
+      <div class="or-divider">or</div>
+      <button class="btn-google" onclick="handleGoogleAuth()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="modal-switch">Already have an account? <a onclick="switchAuth('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUBMIT CONFIRM MODAL ── -->
+<div class="overlay" id="submitModal">
+  <div class="modal" style="max-width:380px">
+    <h2>Submit Exam?</h2>
+    <p style="font-size:14px;color:var(--g500);margin-top:.35rem">
+      Answered: <strong id="m-ans">0</strong> / <strong id="m-tot">0</strong> &nbsp;·&nbsp;
+      Unanswered: <strong id="m-un" style="color:var(--red)">0</strong>
+    </p>
+    <p style="font-size:13px;color:var(--g500);margin-top:.5rem">This action cannot be undone. Submit?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeSubmitModal()">Go Back</button>
+      <button class="btn btn-red btn-sm" onclick="submitExam()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     HOME SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen active" id="homeScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r">
+      <div class="nav-link on" onclick="go('homeScreen')" style="display:none" id="hl-home">Home</div>
+      <div class="nav-link" onclick="go('dashboardScreen')" id="hl-db">Dashboard</div>
+      <div class="nav-link" onclick="go('practiceScreen')">Practice</div>
+      <div class="nav-link" onclick="go('syllabusScreen')">Syllabus</div>
+      <div id="authButtons">
+        <button class="nav-auth-btn btn-login" onclick="openAuth('login')">Sign In</button>
+        <button class="nav-auth-btn btn-signup" onclick="openAuth('register')" style="margin-left:6px">Join Free</button>
+      </div>
+      <div id="userPill" style="display:none">
+        <div class="user-pill" onclick="go('dashboardScreen')">
+          <div class="user-avatar" id="uAvatar">G</div>
+          <div class="user-name" id="uName">User</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-badge">🎯 SSC CGL 2025–26 · Tier 1 &amp; Tier 2 Ready</div>
+    <h1>Crack SSC CGL with<br><em>Real Mock Tests</em></h1>
+    <p>Free. No login required to practice. Earn your Income Tax Inspector badge by mastering every section.</p>
+    <div class="hero-stats">
+      <div class="hs-item"><div class="num">2,400+</div><div class="lbl">Questions</div></div>
+      <div class="hs-item"><div class="num">₹0</div><div class="lbl">Forever Free</div></div>
+      <div class="hs-item"><div class="num">Tier 1 &amp; 2</div><div class="lbl">Both Covered</div></div>
+      <div class="hs-item"><div class="num">−0.5</div><div class="lbl">Negative Marking</div></div>
+    </div>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="startTest('tier1_full')">▶ Start Tier 1 Mock</button>
+      <button class="btn btn-secondary" onclick="go('practiceScreen')">Subject Practice</button>
+    </div>
+  </div>
+
+  <!-- Test Cards -->
+  <div class="section fu">
+    <h2 class="sec-title">Pick Your Test</h2>
+    <p class="sec-sub">All tests follow SSC CGL 2025–26 official exam pattern with negative marking</p>
+    <div class="test-grid">
+      <div class="card tc featured" onclick="startTest('tier1_full')" style="cursor:pointer">
+        <div class="featured-badge">POPULAR</div>
+        <div class="tc-icon" style="background:#EFF6FF">📋</div>
+        <h3>Tier 1 Full Mock</h3>
+        <p>All 4 sections · 100 Qs · 60 minutes. Exact CBE simulation.</p>
+        <div class="tc-chips"><span class="chip ch-b">100 Qs</span><span class="chip ch-a">60 min</span><span class="chip ch-g">200 marks</span></div>
+      </div>
+      <div class="card tc" onclick="startTest('tier2_math')" style="cursor:pointer">
+        <div class="tc-icon" style="background:#FFFBEB">📊</div>
+        <h3>Tier 2 — Maths</h3>
+        <p>Paper 1 · 30 Qs · 60 minutes. Advanced quant for Paper 1.</p>
+        <div class="tc-chips"><span class="chip ch-b">30 Qs</span><span class="chip ch-a">60 min</span><span class="chip ch-p">90 marks</span></div>
+      </div>
+      <div class="card tc" onclick="startTest('tier2_english')" style="cursor:pointer">
+        <div class="tc-icon" style="background:#F0FDF4">📝</div>
+        <h3>Tier 2 — English</h3>
+        <p>Paper 2 · 40 Qs · 60 minutes. Language &amp; comprehension.</p>
+        <div class="tc-chips"><span class="chip ch-b">40 Qs</span><span class="chip ch-a">60 min</span><span class="chip ch-g">120 marks</span></div>
+      </div>
+      <div class="card tc" onclick="startTest('gk_mini')" style="cursor:pointer">
+        <div class="tc-icon" style="background:#FAF5FF">🌏</div>
+        <h3>GK Mini Test</h3>
+        <p>25 Qs · 20 minutes. Static GK + current affairs burst.</p>
+        <div class="tc-chips"><span class="chip ch-b">25 Qs</span><span class="chip ch-a">20 min</span><span class="chip ch-r">50 marks</span></div>
+      </div>
+      <div class="card tc" onclick="startTest('quant_mini')" style="cursor:pointer">
+        <div class="tc-icon" style="background:#FEF2F2">🔢</div>
+        <h3>Quant Speed Test</h3>
+        <p>25 Qs · 25 minutes. Sharpen calculation speed.</p>
+        <div class="tc-chips"><span class="chip ch-b">25 Qs</span><span class="chip ch-a">25 min</span><span class="chip ch-r">50 marks</span></div>
+      </div>
+      <div class="card tc" onclick="startTest('reasoning_mini')" style="cursor:pointer">
+        <div class="tc-icon" style="background:#ECFEFF">🧩</div>
+        <h3>Reasoning Booster</h3>
+        <p>25 Qs · 20 minutes. Analogy, series, coding-decoding.</p>
+        <div class="tc-chips"><span class="chip ch-b">25 Qs</span><span class="chip ch-a">20 min</span><span class="chip ch-p">50 marks</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marking scheme strip -->
+  <div style="background:var(--navy);padding:1.75rem 1.5rem;text-align:center;color:#fff">
+    <h3 style="font-family:var(--fd);font-size:18px;margin-bottom:.35rem">Marking Scheme: <span style="color:var(--green)">+2 Correct</span> &nbsp;|&nbsp; <span style="color:var(--red)">−0.5 Wrong</span> &nbsp;|&nbsp; <span style="color:var(--g400)">0 Skipped</span></h3>
+    <p style="font-size:13px;color:rgba(255,255,255,.55)">Attempt wisely — negative marking applies to all sections in both Tier 1 and Tier 2</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     INSTRUCTIONS SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="instructionsScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r"><div class="nav-link" onclick="go('homeScreen')">← Home</div></div>
+  </nav>
+  <div class="instr-wrap fu">
+    <h2 class="sec-title" id="instrTitle">Tier 1 Full Mock Test</h2>
+    <p class="sec-sub">Read carefully before starting — timer begins the moment you click Start</p>
+    <div class="instr-card">
+      <h3>📋 Exam Structure</h3>
+      <table class="itbl" id="instrTbl"><thead><tr><th>Section</th><th>Subject</th><th>Questions</th><th>Marks</th><th>Time</th></tr></thead><tbody id="instrTblBody"></tbody></table>
+    </div>
+    <div class="instr-card">
+      <h3>⚡ Rules</h3>
+      <ul class="ilist">
+        <li>Correct answer: <strong>+2 marks</strong></li>
+        <li>Wrong answer: <strong>−0.5 marks</strong> (negative marking)</li>
+        <li>Skipped: <strong>0 marks</strong></li>
+        <li>Only one correct option per question</li>
+        <li>Use the Question Palette (right side) to jump between questions</li>
+        <li>Mark questions for review — revisit before submitting</li>
+        <li>Exam auto-submits when timer reaches 00:00</li>
+        <li>Full solution with explanation shown after submission</li>
+      </ul>
+    </div>
+    <div class="instr-card">
+      <h3>🎨 Palette Legend</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem">
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:5px;background:var(--g100);border:1.5px solid var(--g200)"></div><span style="font-size:13px;color:var(--g600)">Not visited</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:5px;background:var(--green)"></div><span style="font-size:13px;color:var(--g600)">Answered</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:5px;background:var(--amber)"></div><span style="font-size:13px;color:var(--g600)">Marked for review</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:5px;background:var(--navy)"></div><span style="font-size:13px;color:var(--g600)">Current question</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:.75rem;justify-content:center;padding:.75rem 0 1.5rem">
+      <button class="btn btn-ghost" onclick="go('homeScreen')">Cancel</button>
+      <button class="btn btn-primary" style="font-size:16px;padding:14px 36px" onclick="beginExam()">Start Exam →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EXAM SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="examScreen">
+  <div class="exam-header">
+    <div class="exam-title-text" id="examTitle">SSC CGL Tier 1 Mock</div>
+    <div class="timer" id="timerEl"><span>⏱</span><span id="timerDisp">60:00</span></div>
+    <button class="btn btn-green btn-sm" onclick="confirmSubmit()">Submit</button>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:1%"></div></div>
+
+  <div class="exam-body">
+    <!-- Question -->
+    <div class="qpanel">
+      <div class="q-meta">
+        <div class="q-num" id="qNum">Q.1</div>
+        <div class="q-subj" id="qSubj">General Intelligence</div>
+        <div class="q-marks">+<b>2</b> / −0.5</div>
+      </div>
+      <div class="q-text" id="qText">Loading…</div>
+      <div class="options" id="optsContainer"></div>
+      <div class="sol-panel" id="solPanel">
+        <div class="sol-title">✅ Explanation</div>
+        <div class="sol-text" id="solText"></div>
+      </div>
+      <div class="q-actions">
+        <button class="btn btn-ghost btn-sm" onclick="clearResp()">Clear</button>
+        <button class="btn btn-amber btn-sm" onclick="markReview()">⭐ Mark for Review</button>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="saveNext()">Save & Next →</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="pal-card">
+        <div class="pal-title">Question Palette</div>
+        <div class="sec-tabs" id="secTabs"></div>
+        <div class="pal-legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Answered</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Marked</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--g200)"></div>Not visited</div>
+        </div>
+        <div class="pal-grid" id="palGrid"></div>
+      </div>
+      <div class="pal-card">
+        <div class="pal-title">Progress</div>
+        <div class="mini-stats">
+          <div class="ms"><div class="v" id="cntAns" style="color:var(--green)">0</div><div class="l">Answered</div></div>
+          <div class="ms"><div class="v" id="cntMrk" style="color:var(--amber)">0</div><div class="l">Marked</div></div>
+          <div class="ms"><div class="v" id="cntNv" style="color:var(--g400)">0</div><div class="l">Not Visited</div></div>
+          <div class="ms"><div class="v" id="cntSkp" style="color:var(--red)">0</div><div class="l">Skipped</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     RESULT SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="resultScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r">
+      <div class="nav-link" onclick="go('homeScreen')">Home</div>
+      <div class="nav-link" onclick="go('dashboardScreen')">Dashboard</div>
+    </div>
+  </nav>
+  <div class="result-hero">
+    <div class="score-ring">
+      <div class="sn" id="rScore">0</div>
+      <div class="st" id="rScoreOf">/ 200</div>
+    </div>
+    <h2 style="font-family:var(--fd);font-size:24px;font-weight:700;margin-bottom:.35rem" id="rGrade">Test Completed!</h2>
+    <p style="font-size:14px;color:rgba(255,255,255,.65)" id="rSub">View your detailed analysis below</p>
+  </div>
+  <div class="res-stats">
+    <div class="rs"><div class="v" id="rCorrect" style="color:var(--green)">0</div><div class="l">Correct</div></div>
+    <div class="rs"><div class="v" id="rWrong" style="color:var(--red)">0</div><div class="l">Wrong</div></div>
+    <div class="rs"><div class="v" id="rSkip" style="color:var(--g400)">0</div><div class="l">Skipped</div></div>
+    <div class="rs"><div class="v" id="rAcc" style="color:var(--blue)">0%</div><div class="l">Accuracy</div></div>
+  </div>
+  <div class="ana-sec">
+    <h3 class="sec-title" style="margin-bottom:1.25rem">Section-wise Breakdown</h3>
+    <div style="display:flex;flex-direction:column;gap:.9rem;margin-bottom:2rem" id="secBars"></div>
+    <h3 class="sec-title" style="margin-bottom:1rem">Answer Review + Solutions</h3>
+    <div id="reviewCont"></div>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;padding-bottom:2rem">
+      <button class="btn btn-primary" onclick="startTest(currentTest)">Retake Test</button>
+      <button class="btn btn-ghost" onclick="go('homeScreen')">All Tests</button>
+      <button class="btn btn-white" onclick="go('dashboardScreen')" style="background:var(--navy);color:#fff;border:none">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     DASHBOARD SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="dashboardScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r">
+      <div class="nav-link" onclick="go('homeScreen')">Home</div>
+      <div class="nav-link" onclick="go('practiceScreen')">Practice</div>
+      <div class="nav-link on">Dashboard</div>
+      <div id="dbAuthBtns">
+        <button class="nav-auth-btn btn-login" onclick="openAuth('login')">Sign In</button>
+      </div>
+      <div id="dbUserPill" style="display:none">
+        <div class="user-pill">
+          <div class="user-avatar" id="dbAvatar">G</div>
+          <div class="user-name" id="dbName">User</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Not-logged-in banner -->
+  <div id="dbGuestBanner" style="background:#EFF6FF;border-bottom:2px solid var(--blue);padding:.85rem 1.5rem;text-align:center;font-size:14px;color:var(--blue)">
+    📊 <strong>Sign in to save your progress</strong> — streaks, scores, and leaderboard ranking persist across sessions.
+    <button class="btn btn-primary btn-sm" onclick="openAuth('register')" style="margin-left:1rem">Join Free →</button>
+  </div>
+
+  <div class="section fu">
+    <h2 class="sec-title">Your Dashboard</h2>
+    <p class="sec-sub">Track your SSC CGL 2025–26 preparation</p>
+
+    <div class="db-grid">
+      <div>
+        <div class="streak-card" style="margin-bottom:1rem">
+          <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:.2rem">Study Streak</div>
+          <div class="streak-num" id="dbStreak">0</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.65);margin-top:.2rem">days in a row 🔥</div>
+          <div class="cal-dots" id="calDots"></div>
+        </div>
+        <div class="stat3">
+          <div class="scard"><div class="v" id="dbTests" style="color:var(--blue)">0</div><div class="l">Tests Taken</div></div>
+          <div class="scard"><div class="v" id="dbBest" style="color:var(--green)">—</div><div class="l">Best Score</div></div>
+          <div class="scard"><div class="v" id="dbAvgAcc" style="color:var(--amber)">—</div><div class="l">Avg Accuracy</div></div>
+        </div>
+      </div>
+      <div class="lb-card">
+        <div style="font-family:var(--fd);font-size:15px;font-weight:700;margin-bottom:.9rem">🏆 Leaderboard</div>
+        <div id="lbRows"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.75rem">
+      <h3 style="font-family:var(--fd);font-size:17px;font-weight:700;margin-bottom:1rem">Subject Mastery</h3>
+      <div style="display:flex;flex-direction:column;gap:.85rem" id="dbSubjBars"></div>
+    </div>
+
+    <div style="margin-top:1.75rem">
+      <h3 style="font-family:var(--fd);font-size:17px;font-weight:700;margin-bottom:1rem">Recent Tests</h3>
+      <div id="recentTests" style="display:flex;flex-direction:column;gap:.65rem"></div>
+    </div>
+
+    <div style="margin-top:2rem;text-align:center">
+      <button class="btn btn-primary" onclick="startTest('tier1_full')">▶ Take Another Mock Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PRACTICE SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="practiceScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r">
+      <div class="nav-link" onclick="go('homeScreen')">Home</div>
+      <div class="nav-link on">Practice</div>
+      <div class="nav-link" onclick="go('dashboardScreen')">Dashboard</div>
+    </div>
+  </nav>
+  <div class="section fu">
+    <h2 class="sec-title">Topic-wise Practice</h2>
+    <p class="sec-sub">Focus on weak areas. Each card launches a targeted mini-test.</p>
+    <div class="pills" id="practPills">
+      <div class="pill on" onclick="filterTopic('all',this)">All Topics</div>
+      <div class="pill" onclick="filterTopic('reasoning',this)">General Intelligence</div>
+      <div class="pill" onclick="filterTopic('gk',this)">General Awareness</div>
+      <div class="pill" onclick="filterTopic('quant',this)">Quantitative Aptitude</div>
+      <div class="pill" onclick="filterTopic('english',this)">English Language</div>
+    </div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SYLLABUS SCREEN
+══════════════════════════════════════════════════ -->
+<div class="screen" id="syllabusScreen">
+  <nav class="nav">
+    <div class="logo" onclick="go('homeScreen')">Crack<span>CGL</span></div>
+    <div class="nav-r">
+      <div class="nav-link" onclick="go('homeScreen')">Home</div>
+      <div class="nav-link on">Syllabus</div>
+    </div>
+  </nav>
+  <div class="section fu">
+    <h2 class="sec-title">SSC CGL 2025–26 Complete Syllabus</h2>
+    <p class="sec-sub">Official exam pattern — Tier 1 &amp; Tier 2 (New Pattern)</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem">
+      <div class="instr-card">
+        <h3 style="color:var(--navy)">🧩 General Intelligence &amp; Reasoning</h3>
+        <ul class="ilist" style="margin-top:0">
+          <li>Analogies &amp; Classification</li><li>Similarities &amp; Differences</li>
+          <li>Space Visualization</li><li>Arithmetic Number Series</li>
+          <li>Non-verbal Series</li><li>Coding-Decoding</li>
+          <li>Blood Relations</li><li>Seating Arrangement</li>
+          <li>Statement &amp; Conclusions</li><li>Syllogistic Reasoning</li>
+          <li>Venn Diagrams</li><li>Direction &amp; Distance</li>
+          <li>Matrix &amp; Word Formation</li><li>Clocks &amp; Calendars</li>
+        </ul>
+      </div>
+      <div class="instr-card">
+        <h3 style="color:var(--navy)">🌏 General Awareness</h3>
+        <ul class="ilist" style="margin-top:0">
+          <li>History of India</li><li>Indian Polity &amp; Constitution</li>
+          <li>Indian Economy</li><li>Geography — India &amp; World</li>
+          <li>Science — Physics, Chemistry, Biology</li>
+          <li>Current Affairs (Last 6 months)</li>
+          <li>Sports &amp; Awards 2024–25</li>
+          <li>Books, Authors &amp; Important Days</li>
+          <li>Government Schemes 2025</li>
+          <li>Environment &amp; Ecology</li>
+          <li>Defence &amp; International Affairs</li>
+        </ul>
+      </div>
+      <div class="instr-card">
+        <h3 style="color:var(--navy)">🔢 Quantitative Aptitude</h3>
+        <ul class="ilist" style="margin-top:0">
+          <li>Number System &amp; Simplification</li><li>HCF, LCM</li>
+          <li>Ratio &amp; Proportion</li><li>Percentage</li>
+          <li>Profit, Loss &amp; Discount</li>
+          <li>Simple &amp; Compound Interest</li>
+          <li>Time, Work &amp; Pipes</li>
+          <li>Time, Speed &amp; Distance</li>
+          <li>Average &amp; Mixtures</li>
+          <li>Mensuration (2D &amp; 3D)</li>
+          <li>Geometry &amp; Trigonometry</li>
+          <li>Algebra</li><li>Data Interpretation</li>
+        </ul>
+      </div>
+      <div class="instr-card">
+        <h3 style="color:var(--navy)">📝 English Language</h3>
+        <ul class="ilist" style="margin-top:0">
+          <li>Reading Comprehension</li><li>Cloze Test</li>
+          <li>Error Spotting</li><li>Sentence Improvement</li>
+          <li>Active &amp; Passive Voice</li>
+          <li>Direct &amp; Indirect Speech</li>
+          <li>Synonyms &amp; Antonyms</li>
+          <li>One Word Substitution</li>
+          <li>Idioms &amp; Phrases</li>
+          <li>Para Jumbles</li>
+          <li>Spelling Correction</li>
+          <li>Fill in the Blanks</li>
+        </ul>
+      </div>
+    </div>
+    <div class="instr-card" style="margin-top:1.25rem">
+      <h3 style="color:var(--navy)">📅 Tier 2 New Pattern (2024 Onwards)</h3>
+      <table class="itbl">
+        <thead><tr><th>Paper</th><th>Subject</th><th>Qs</th><th>Marks</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>Paper 1 — S1</td><td>Mathematical Abilities</td><td>30</td><td>90</td><td>60 min</td></tr>
+          <tr><td>Paper 1 — S2</td><td>Reasoning &amp; GI</td><td>30</td><td>90</td><td>60 min</td></tr>
+          <tr><td>Paper 2 — S3</td><td>English Lang. &amp; Comp.</td><td>45</td><td>135</td><td>60 min</td></tr>
+          <tr><td>Paper 3 — S4</td><td>General Awareness + Computer</td><td>25+20</td><td>75+60</td><td>60 min</td></tr>
+          <tr><td>Paper 4 — S5*</td><td>Statistics (optional)</td><td>100</td><td>200</td><td>2 hrs</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--g500);margin-top:.5rem">*Paper 4 only for Junior Statistical Officer posts</p>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="startTest('tier1_full')">Start Full Mock Test →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+<script>
+/* ================================================
+   ⚙️  SUPABASE CONFIG
+   ─────────────────────────────────────────────
+   1. Go to https://supabase.com → create free project
+   2. Dashboard → Settings → API
+   3. Copy Project URL and anon/public key below
+   4. Run migrations/001_init.sql in SQL Editor
+   ================================================ */
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';   // e.g. https://abc123.supabase.co
+const SUPABASE_KEY  = 'YOUR_SUPABASE_ANON_KEY'; // eyJhbGci...
+
+const CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+const sb = CONFIGURED ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+if (CONFIGURED) document.getElementById('setupBanner').classList.add('hide');
+
+/* ================================================
+   QUESTION BANK  (local — replace with DB later)
+   In production: fetch from Supabase `questions` table
+   ================================================ */
+const QB = {
+  reasoning:[
+    {q:"If BOOK is coded as DQQM, how is COLD coded?",opts:["EQNF","FQOG","EOQF","DQNF"],ans:0,sol:"Each letter is shifted +2 positions: C→E, O→Q, L→N, D→F."},
+    {q:"Find the odd one out: 3, 5, 7, 9, 11",opts:["3","9","5","11"],ans:1,sol:"9 is the only composite number (3×3). All others are prime."},
+    {q:"Pointing to a man, Sunita says 'His mother's brother is my father's only brother.' How is the man related to Sunita?",opts:["Nephew","Cousin","Son","Uncle"],ans:1,sol:"Man's mother's brother = Sunita's father. So the man is Sunita's cousin."},
+    {q:"A clock shows 3:15. Angle between hour and minute hands?",opts:["7.5°","0°","15°","5°"],ans:0,sol:"At 3:15: minute hand at 90°, hour hand at 97.5° (90 + 15×0.5). Angle = 7.5°."},
+    {q:"Doctor : Hospital :: Teacher : ?",opts:["Student","School","Classroom","Education"],ans:1,sol:"A doctor's workplace is a hospital; a teacher's workplace is a school."},
+    {q:"Which number replaces ?: 2, 6, 12, 20, 30, ?",opts:["42","40","44","38"],ans:0,sol:"Pattern: n(n+1). Next: 6×7 = 42. Differences: 4,6,8,10,12."},
+    {q:"Complete the series: AZ, BY, CX, DW, ?",opts:["EV","EU","FV","EW"],ans:0,sol:"First letter ascends A→E; second descends Z→V. Answer: EV."},
+    {q:"In a row of 40, Ravi is 7th from left and Meena is 15th from right. Students between them?",opts:["18","17","19","20"],ans:0,sol:"Meena from left = 40-15+1=26. Between = 26-7-1 = 18."},
+    {q:"If South-East becomes North, then North-West becomes?",opts:["South","West","East","South-West"],ans:0,sol:"Rotating 135° anticlockwise: SE→N, so NW→S."},
+    {q:"Arrange in ascending order: Sentence, Word, Paragraph, Letter",opts:["Letter,Word,Sentence,Paragraph","Word,Letter,Sentence,Paragraph","Paragraph,Sentence,Letter,Word","Letter,Sentence,Word,Paragraph"],ans:0,sol:"Smallest to largest unit: Letter → Word → Sentence → Paragraph."},
+  ],
+  gk:[
+    {q:"Which article of the Indian Constitution abolishes untouchability?",opts:["Article 14","Article 17","Article 21","Article 25"],ans:1,sol:"Article 17 abolishes untouchability in any form, making it a punishable offence."},
+    {q:"The Battle of Plassey was fought in which year?",opts:["1757","1764","1756","1760"],ans:0,sol:"Battle of Plassey: June 23, 1757 — East India Company vs Nawab Siraj ud-Daulah."},
+    {q:"Which river is known as the 'Sorrow of Bihar'?",opts:["Gandak","Kosi","Ghaghara","Bagmati"],ans:1,sol:"Kosi River causes devastating floods in Bihar nearly every year, hence called its 'Sorrow'."},
+    {q:"Largest planet in our solar system?",opts:["Saturn","Uranus","Jupiter","Neptune"],ans:2,sol:"Jupiter is the largest planet — mass > all other planets combined."},
+    {q:"The Durand Cup is associated with which sport?",opts:["Hockey","Football","Cricket","Tennis"],ans:1,sol:"Durand Cup is Asia's oldest football tournament, established in 1888."},
+    {q:"First Governor-General of independent India?",opts:["Rajagopalachari","Lord Mountbatten","C Rajagopalachari","Lord Wavell"],ans:1,sol:"Lord Mountbatten served as first Governor-General of independent India (Aug 1947 – Jun 1948)."},
+    {q:"Palk Strait separates India from?",opts:["Maldives","Bangladesh","Sri Lanka","Myanmar"],ans:2,sol:"Palk Strait lies between Tamil Nadu (India) and Northern Sri Lanka."},
+    {q:"Right to Property was removed as a Fundamental Right by which amendment?",opts:["42nd","44th","46th","48th"],ans:1,sol:"44th Constitutional Amendment (1978) removed Right to Property from Fundamental Rights."},
+    {q:"Photosynthesis takes place in?",opts:["Mitochondria","Nucleus","Chloroplast","Ribosome"],ans:2,sol:"Chloroplasts contain chlorophyll and are the site of photosynthesis."},
+    {q:"Which gas is used in fire extinguishers?",opts:["Nitrogen","Oxygen","Carbon Dioxide","Hydrogen"],ans:2,sol:"CO₂ displaces oxygen, smothering fire without leaving residue."},
+  ],
+  quant:[
+    {q:"A train 150m long passes a pole in 15 seconds. Speed in km/h?",opts:["36","40","54","60"],ans:0,sol:"Speed = 150/15 = 10 m/s × 3.6 = 36 km/h."},
+    {q:"A:B = 3:4, B:C = 5:6. Find A:B:C",opts:["15:20:24","3:4:6","9:12:15","12:16:24"],ans:0,sol:"A:B = 15:20, B:C = 20:24. So A:B:C = 15:20:24."},
+    {q:"HCF of 36 and 48?",opts:["6","12","18","24"],ans:1,sol:"Prime factorization: 36=2²×3², 48=2⁴×3. HCF=2²×3=12."},
+    {q:"Shopkeeper gives 10% discount, still earns 20% profit. MRP=₹500. Cost price?",opts:["₹350","₹375","₹400","₹450"],ans:1,sol:"SP = 0.9×500 = ₹450. CP = 450/1.2 = ₹375."},
+    {q:"15% of 240 = ?",opts:["34","36","38","40"],ans:1,sol:"240 × 15/100 = 36."},
+    {q:"Average of 5 numbers is 18. Excluding one, average becomes 16. Excluded number?",opts:["24","26","28","30"],ans:1,sol:"Total=90, remaining=64. Excluded = 90-64 = 26."},
+    {q:"SI on ₹2000 at 5% per annum for 3 years?",opts:["₹300","₹350","₹250","₹400"],ans:0,sol:"SI = P×R×T/100 = 2000×5×3/100 = ₹300."},
+    {q:"Radius of circle increased by 20%. Area increases by?",opts:["40%","44%","20%","48%"],ans:1,sol:"New area = π(1.2r)² = 1.44πr². Increase = 44%."},
+    {q:"Water mixed with milk (₹12/L) to get mixture at ₹8/L. Ratio water:milk?",opts:["1:2","1:3","2:1","1:1"],ans:0,sol:"Alligation: (12-8):(8-0) = 4:8 = 1:2. Water:Milk = 1:2."},
+    {q:"Pipe A fills tank in 4 hrs, B empties in 12 hrs. Both open together fill in?",opts:["5 hrs","6 hrs","8 hrs","10 hrs"],ans:1,sol:"Net rate = 1/4 - 1/12 = 2/12 = 1/6. Time = 6 hours."},
+  ],
+  english:[
+    {q:"Synonym of BENEVOLENT:",opts:["Cruel","Generous","Selfish","Miser"],ans:1,sol:"Benevolent = well-meaning and kind. Generous is the closest synonym."},
+    {q:"Error in: 'He go to school every day.'",opts:["He","go","to school","every day"],ans:1,sol:"'go' → 'goes'. Third-person singular present requires -s/es."},
+    {q:"Passive voice: 'The teacher punished the student.'",opts:["The student had been punished","The student is punished","The student was punished","The student has been punished"],ans:2,sol:"Simple past active → Simple past passive: was/were + V3."},
+    {q:"'He is ___ honest man.' Fill in:",opts:["a","an","the","(no article)"],ans:1,sol:"'Honest' has a vowel sound (silent H), so 'an' is correct."},
+    {q:"Antonym of DILIGENT:",opts:["Hardworking","Industrious","Lazy","Careful"],ans:2,sol:"Diligent means hardworking. Antonym = Lazy."},
+    {q:"Indirect speech: He said, 'I am going to Delhi.'",opts:["He said he was going to Delhi","He said that he is going to Delhi","He told I was going to Delhi","He said I am going to Delhi"],ans:0,sol:"'I' → 'he', 'am going' → 'was going'. Add 'that'."},
+    {q:"Correctly spelled word:",opts:["Accomodation","Accommodation","Acommodation","Accommodaton"],ans:1,sol:"Accommodation — double 'c' and double 'm'."},
+    {q:"One word for 'Fear of water':",opts:["Claustrophobia","Arachnophobia","Hydrophobia","Agoraphobia"],ans:2,sol:"Hydrophobia — 'hydro' = water, 'phobia' = fear."},
+    {q:"Idiom meaning 'to improve one's performance with more effort':",opts:["Let the cat out of the bag","Hit the sack","Pull one's socks up","Bite the bullet"],ans:2,sol:"'Pull one's socks up' = make an effort to improve."},
+    {q:"Rearrange: Only/realized/too late/he/his mistake",opts:["He realized only too late his mistake","Only he realized too late his mistake","He realized his mistake only too late","Too late only he his mistake realized"],ans:2,sol:"Correct: 'He realized his mistake only too late.'"},
+  ]
+};
+
+/* ================================================
+   TEST CONFIGS
+   ================================================ */
+const TC = {
+  tier1_full:{name:"SSC CGL Tier 1 Full Mock",dur:3600,totalMarks:200,
+    sections:[
+      {name:"General Intelligence & Reasoning",subj:"reasoning",count:10},
+      {name:"General Awareness",subj:"gk",count:10},
+      {name:"Quantitative Aptitude",subj:"quant",count:10},
+      {name:"English Language",subj:"english",count:10}
+    ],
+    rows:[["Sec 1","General Intelligence & Reasoning","25","50","15 min"],
+          ["Sec 2","General Awareness","25","50","15 min"],
+          ["Sec 3","Quantitative Aptitude","25","50","15 min"],
+          ["Sec 4","English Language","25","50","15 min"],
+          ["TOTAL","","100","200","60 min"]]
+  },
+  tier2_math:{name:"Tier 2 — Mathematical Abilities",dur:3600,totalMarks:90,
+    sections:[{name:"Mathematical Abilities (Tier 2)",subj:"quant",count:10}],
+    rows:[["Paper 1 S1","Mathematical Abilities","30","90","60 min"]]
+  },
+  tier2_english:{name:"Tier 2 — English Language",dur:3600,totalMarks:135,
+    sections:[{name:"English Language & Comprehension (Tier 2)",subj:"english",count:10}],
+    rows:[["Paper 2 S3","English Language & Comprehension","45","135","60 min"]]
+  },
+  gk_mini:{name:"GK Mini Test",dur:1200,totalMarks:50,
+    sections:[{name:"General Awareness",subj:"gk",count:10}],
+    rows:[["Section","General Awareness","25","50","20 min"]]
+  },
+  quant_mini:{name:"Quantitative Speed Test",dur:1500,totalMarks:50,
+    sections:[{name:"Quantitative Aptitude",subj:"quant",count:10}],
+    rows:[["Section","Quantitative Aptitude","25","50","25 min"]]
+  },
+  reasoning_mini:{name:"Reasoning Booster",dur:1200,totalMarks:50,
+    sections:[{name:"General Intelligence & Reasoning",subj:"reasoning",count:10}],
+    rows:[["Section","General Intelligence & Reasoning","25","50","20 min"]]
+  }
+};
+
+/* ================================================
+   STATE
+   ================================================ */
+let currentTest='', questions=[], answers=[], status=[], curQ=0, timer=null, timeLeft=0;
+let testHistory = JSON.parse(localStorage.getItem('cgl_history')||'[]');
+let currentUser = null;
+
+/* ================================================
+   SUPABASE AUTH
+   ================================================ */
+if(CONFIGURED){
+  sb.auth.onAuthStateChange((_,session)=>{
+    currentUser = session?.user||null;
+    updateAuthUI();
+  });
+  sb.auth.getSession().then(({data:{session}})=>{
+    currentUser = session?.user||null;
+    updateAuthUI();
+  });
+}
+
+function updateAuthUI(){
+  const loggedIn = !!currentUser;
+  const name = currentUser?.user_metadata?.name || currentUser?.email?.split('@')[0] || 'User';
+  const initial = name[0].toUpperCase();
+
+  // Home nav
+  const ab = document.getElementById('authButtons');
+  const up = document.getElementById('userPill');
+  if(loggedIn){ ab.style.display='none'; up.style.display='block'; document.getElementById('uAvatar').textContent=initial; document.getElementById('uName').textContent=name; }
+  else { ab.style.display='flex'; up.style.display='none'; }
+
+  // Dashboard
+  const dab = document.getElementById('dbAuthBtns');
+  const dup = document.getElementById('dbUserPill');
+  const gb = document.getElementById('dbGuestBanner');
+  if(loggedIn){ dab.style.display='none'; dup.style.display='block'; document.getElementById('dbAvatar').textContent=initial; document.getElementById('dbName').textContent=name; if(gb)gb.style.display='none'; }
+  else { dab.style.display='flex'; dup.style.display='none'; if(gb)gb.style.display='block'; }
+}
+
+async function handleLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPwd').value;
+  if(!email||!pwd){ showAuthAlert('loginAlert','Please fill all fields','err'); return; }
+
+  if(!CONFIGURED){
+    // Dev mode: simulate login
+    currentUser = {email, user_metadata:{name:email.split('@')[0]}};
+    updateAuthUI(); closeAuth(); toast('Signed in (dev mode)'); return;
+  }
+
+  const {data,error} = await sb.auth.signInWithPassword({email,password:pwd});
+  if(error){ showAuthAlert('loginAlert',error.message,'err'); return; }
+  closeAuth(); toast('Welcome back!');
+}
+
+async function handleRegister(){
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd   = document.getElementById('regPwd').value;
+  if(!name||!email||!pwd){ showAuthAlert('registerAlert','Please fill all fields','err'); return; }
+  if(pwd.length<8){ showAuthAlert('registerAlert','Password must be at least 8 characters','err'); return; }
+
+  if(!CONFIGURED){
+    currentUser = {email, user_metadata:{name}};
+    updateAuthUI(); closeAuth(); toast('Account created (dev mode)!'); return;
+  }
+
+  const {data,error} = await sb.auth.signUp({email,password:pwd,options:{data:{name}}});
+  if(error){ showAuthAlert('registerAlert',error.message,'err'); return; }
+  showAuthAlert('registerAlert','Check your email to verify your account ✅','suc');
+}
+
+async function handleGoogleAuth(){
+  if(!CONFIGURED){ toast('Configure Supabase first'); return; }
+  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+}
+
+async function handleLogout(){
+  if(CONFIGURED) await sb.auth.signOut();
+  currentUser = null; updateAuthUI(); toast('Signed out');
+}
+
+function showAuthAlert(id,msg,type){
+  const el = document.getElementById(id);
+  el.textContent=msg; el.className=`alert ${type}`; el.style.display='block';
+}
+
+/* ================================================
+   AUTH MODAL
+   ================================================ */
+function openAuth(mode){
+  document.getElementById('authOverlay').classList.add('open');
+  switchAuth(mode);
+  // Clear alerts
+  ['loginAlert','registerAlert'].forEach(id=>{
+    const el=document.getElementById(id); el.style.display='none';
+  });
+}
+function closeAuth(){ document.getElementById('authOverlay').classList.remove('open'); }
+function switchAuth(mode){
+  document.getElementById('loginForm').style.display = mode==='login'?'block':'none';
+  document.getElementById('registerForm').style.display = mode==='register'?'block':'none';
+}
+
+/* ================================================
+   NAVIGATION
+   ================================================ */
+function go(screenId){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0,0);
+  if(screenId==='dashboardScreen') renderDashboard();
+  if(screenId==='practiceScreen') renderTopics('all');
+}
+
+/* ================================================
+   TEST FLOW
+   ================================================ */
+function startTest(type){
+  currentTest = type;
+  const cfg = TC[type];
+  document.getElementById('instrTitle').textContent = cfg.name;
+  const tbody = document.getElementById('instrTblBody');
+  tbody.innerHTML = cfg.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+  go('instructionsScreen');
+}
+
+function beginExam(){
+  const cfg = TC[currentTest];
+  // Build randomized question set
+  questions = [];
+  cfg.sections.forEach(sec=>{
+    const pool = [...QB[sec.subj]].sort(()=>Math.random()-.5).slice(0,sec.count);
+    pool.forEach(q=>questions.push({...q,section:sec.name}));
+  });
+  answers = new Array(questions.length).fill(-1);
+  status  = new Array(questions.length).fill('nv'); // nv=not visited
+  curQ = 0; timeLeft = cfg.dur;
+  document.getElementById('examTitle').textContent = cfg.name;
+  go('examScreen');
+  buildPalette(); buildSecTabs(); renderQ(0); startTimer();
+}
+
+/* ================================================
+   TIMER
+   ================================================ */
+function startTimer(){
+  clearInterval(timer);
+  updateTimer();
+  timer = setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){clearInterval(timer);submitExam();} },1000);
+}
+function updateTimer(){
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  document.getElementById('timerDisp').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el=document.getElementById('timerEl');
+  el.classList.remove('warn','danger');
+  if(timeLeft<=300&&timeLeft>60) el.classList.add('warn');
+  if(timeLeft<=60) el.classList.add('danger');
+}
+
+/* ================================================
+   RENDER QUESTION
+   ================================================ */
+function renderQ(idx){
+  curQ=idx;
+  if(status[idx]==='nv') status[idx]='vis';
+  const q=questions[idx];
+  document.getElementById('qNum').textContent=`Q.${idx+1}`;
+  document.getElementById('qSubj').textContent=q.section;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('solPanel').classList.remove('show');
+  const opts=document.getElementById('optsContainer');
+  const L=['A','B','C','D'];
+  opts.innerHTML=q.opts.map((o,i)=>`
+    <div class="opt${answers[idx]===i?' sel':''}" onclick="pick(${i})">
+      <div class="opt-lbl">${L[i]}</div>
+      <div class="opt-txt">${o}</div>
+    </div>`).join('');
+  document.getElementById('progFill').style.width=((idx+1)/questions.length*100)+'%';
+  updatePalette(); updateProgress();
+}
+
+function pick(i){
+  answers[curQ]=i; status[curQ]='ans';
+  document.querySelectorAll('.opt').forEach((o,j)=>o.classList.toggle('sel',j===i));
+  updatePalette(); updateProgress();
+}
+
+function clearResp(){
+  answers[curQ]=-1;
+  if(status[curQ]!=='mrk') status[curQ]='vis';
+  renderQ(curQ);
+}
+
+function markReview(){
+  status[curQ]='mrk';
+  updatePalette(); toast('⭐ Marked for review');
+  saveNext();
+}
+
+function saveNext(){
+  if(curQ<questions.length-1) renderQ(curQ+1);
+  else toast('Last question reached — click Submit when ready');
+}
+
+/* ================================================
+   PALETTE
+   ================================================ */
+function buildPalette(){
+  document.getElementById('palGrid').innerHTML=questions.map((_,i)=>`
+    <button class="pb nv" id="pb${i}" onclick="renderQ(${i})">${i+1}</button>`).join('');
+}
+function buildSecTabs(){
+  const tabs=document.getElementById('secTabs');
+  const cfg=TC[currentTest];
+  let offset=0;
+  tabs.innerHTML=cfg.sections.map((sec,i)=>{
+    const start=offset; offset+=sec.count;
+    return `<div class="sec-tab${i===0?' on':''}" onclick="renderQ(${start});this.parentElement.querySelectorAll('.sec-tab').forEach(t=>t.classList.remove('on'));this.classList.add('on')">${sec.name.split(' ').pop()}</div>`;
+  }).join('');
+}
+function updatePalette(){
+  questions.forEach((_,i)=>{
+    const b=document.getElementById(`pb${i}`);
+    if(!b) return;
+    b.className='pb';
+    if(i===curQ) b.classList.add('cur');
+    else if(status[i]==='ans') b.classList.add('ans');
+    else if(status[i]==='mrk') b.classList.add('mrk');
+    else if(status[i]==='nv')  b.classList.add('nv');
+  });
+}
+function updateProgress(){
+  const a=status.filter(s=>s==='ans').length;
+  const m=status.filter(s=>s==='mrk').length;
+  const nv=status.filter(s=>s==='nv').length;
+  const sk=status.filter(s=>s==='vis').length;
+  document.getElementById('cntAns').textContent=a;
+  document.getElementById('cntMrk').textContent=m;
+  document.getElementById('cntNv').textContent=nv;
+  document.getElementById('cntSkp').textContent=sk;
+}
+
+/* ================================================
+   SUBMIT
+   ================================================ */
+function confirmSubmit(){
+  const ans=answers.filter(a=>a!==-1).length;
+  document.getElementById('m-ans').textContent=ans;
+  document.getElementById('m-tot').textContent=questions.length;
+  document.getElementById('m-un').textContent=questions.length-ans;
+  document.getElementById('submitModal').classList.add('open');
+}
+function closeSubmitModal(){ document.getElementById('submitModal').classList.remove('open'); }
+
+async function submitExam(){
+  closeSubmitModal();
+  clearInterval(timer);
+  const cfg=TC[currentTest];
+  let correct=0,wrong=0,unattempted=0;
+  const secRes={};
+  cfg.sections.forEach(s=>{ secRes[s.name]={correct:0,wrong:0,total:0}; });
+
+  questions.forEach((q,i)=>{
+    secRes[q.section].total++;
+    if(answers[i]===-1){ unattempted++; }
+    else if(answers[i]===q.ans){ correct++; secRes[q.section].correct++; }
+    else { wrong++; secRes[q.section].wrong++; }
+  });
+
+  const score=Math.max(0,correct*2 - wrong*0.5);
+  const attempted=correct+wrong;
+  const acc=attempted>0?Math.round(correct/attempted*100):0;
+
+  // Save to localStorage (works without login)
+  const entry={name:cfg.name,score:parseFloat(score.toFixed(1)),total:cfg.totalMarks,correct,wrong,unattempted,acc,date:new Date().toLocaleDateString('en-IN')};
+  testHistory.push(entry);
+  localStorage.setItem('cgl_history',JSON.stringify(testHistory.slice(-20)));
+
+  // Save to Supabase if logged in
+  if(CONFIGURED && currentUser){
+    try{
+      await sb.from('test_attempts').insert({
+        user_id:currentUser.id,
+        test_name:cfg.name,
+        score:parseFloat(score.toFixed(1)),
+        total_marks:cfg.totalMarks,
+        correct,wrong,unattempted,
+        accuracy:acc,
+        section_scores:secRes,
+        status:'completed',
+        finished_at:new Date().toISOString()
+      });
+    } catch(e){ console.warn('DB save failed (check table schema):',e.message); }
+  }
+
+  // Render results
+  const pct=score/cfg.totalMarks*100;
+  const grade=pct>=80?'🏆 Outstanding!':pct>=65?'👍 Good Performance':pct>=50?'📈 Keep Pushing':pct>=35?'💪 Needs Work':'🔥 Start Fresh — You Got This';
+  document.getElementById('rScore').textContent=score.toFixed(1);
+  document.getElementById('rScoreOf').textContent=`/ ${cfg.totalMarks}`;
+  document.getElementById('rGrade').textContent=grade;
+  document.getElementById('rSub').textContent=`Accuracy: ${acc}% · ${correct} correct out of ${questions.length}`;
+  document.getElementById('rCorrect').textContent=correct;
+  document.getElementById('rWrong').textContent=wrong;
+  document.getElementById('rSkip').textContent=unattempted;
+  document.getElementById('rAcc').textContent=acc+'%';
+
+  // Section bars
+  document.getElementById('secBars').innerHTML=Object.entries(secRes).map(([nm,d])=>{
+    const p=d.total>0?Math.round(d.correct/d.total*100):0;
+    const col=p>=70?'var(--green)':p>=40?'var(--amber)':'var(--red)';
+    return `<div class="bar-row">
+      <div class="bar-lbl">${nm.split(' ').slice(-1)[0]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <div class="bar-val">${d.correct}/${d.total}</div></div>`;
+  }).join('');
+
+  // Full review
+  const L=['A','B','C','D'];
+  document.getElementById('reviewCont').innerHTML=questions.map((q,i)=>{
+    const ua=answers[i]; const ok=ua===q.ans; const skip=ua===-1;
+    const sc=skip?'var(--g400)':ok?'var(--green)':'var(--red)';
+    const st=skip?'Skipped':ok?'✅ Correct':'❌ Wrong';
+    return `<div class="review-item">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.5rem">
+        <span style="font-size:12px;font-weight:700;color:var(--g500)">Q.${i+1} — ${q.section.split(' ')[0]}</span>
+        <span style="font-size:12px;font-weight:700;color:${sc}">${st}</span>
+      </div>
+      <div style="font-size:14px;font-weight:500;color:var(--g800);margin-bottom:.6rem">${q.q}</div>
+      ${!skip?`<div style="font-size:12px;color:var(--g500);margin-bottom:.3rem">Your answer: <strong style="color:${ok?'var(--green)':'var(--red)'}">${L[ua]}) ${q.opts[ua]}</strong></div>`:''}
+      ${!ok?`<div style="font-size:12px;color:var(--green);margin-bottom:.6rem">Correct: <strong>${L[q.ans]}) ${q.opts[q.ans]}</strong></div>`:''}
+      <div style="background:var(--g50);border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:.65rem .85rem;font-size:13px;color:var(--g600);line-height:1.65">
+        <strong style="color:var(--navy)">Explanation:</strong> ${q.sol}
+      </div></div>`;
+  }).join('');
+
+  go('resultScreen');
+}
+
+/* ================================================
+   DASHBOARD
+   ================================================ */
+async function renderDashboard(){
+  // Calendar streak dots
+  const dots=document.getElementById('calDots');
+  dots.innerHTML='';
+  for(let i=0;i<21;i++){
+    const d=document.createElement('div');
+    d.className='cd'+(i<14?' done':i===14?' today':'');
+    dots.appendChild(d);
+  }
+
+  // Load from Supabase if logged in, else localStorage
+  let history=testHistory;
+  if(CONFIGURED && currentUser){
+    try{
+      const {data}=await sb.from('test_attempts')
+        .select('*').eq('user_id',currentUser.id)
+        .eq('status','completed').order('finished_at',{ascending:false}).limit(20);
+      if(data&&data.length) history=data.map(d=>({name:d.test_name,score:d.score,total:d.total_marks,correct:d.correct,wrong:d.wrong,acc:d.accuracy,date:new Date(d.finished_at).toLocaleDateString('en-IN')}));
+    } catch(e){console.warn('DB fetch failed:',e.message);}
+  }
+
+  // Stats
+  document.getElementById('dbTests').textContent=history.length||'0';
+  if(history.length){
+    document.getElementById('dbBest').textContent=Math.max(...history.map(t=>t.score)).toFixed(0);
+    document.getElementById('dbAvgAcc').textContent=Math.round(history.reduce((s,t)=>s+(t.acc||0),0)/history.length)+'%';
+    document.getElementById('dbStreak').textContent=Math.min(history.length,7);
+  } else {
+    document.getElementById('dbBest').textContent='—';
+    document.getElementById('dbAvgAcc').textContent='—';
+    document.getElementById('dbStreak').textContent='0';
+  }
+
+  // Leaderboard (static mock — real data from Supabase leaderboard view)
+  const lbData=[
+    {n:'Arjun S.',s:187,c:'#2563EB'},{n:'Priya N.',s:181,c:'#10B981'},
+    {n:'Ravi K.',s:176,c:'#F59E0B'},
+    {n:currentUser?currentUser.user_metadata?.name||'You':'You',s:history.length>0?Math.round(history[0].score):0,c:'#8B5CF6',me:true},
+    {n:'Deepa M.',s:159,c:'#EF4444'}
+  ].sort((a,b)=>b.s-a.s);
+  document.getElementById('lbRows').innerHTML=lbData.map((r,i)=>`
+    <div class="lb-row${r.me?' you-row':''}">
+      <div class="lb-rank ${i<3?'top':''}">${i+1}</div>
+      <div class="lb-av" style="background:${r.c}">${r.n[0]}</div>
+      <div class="lb-name">${r.n}${r.me?' (You)':''}</div>
+      <div class="lb-score">${r.s}</div>
+    </div>`).join('');
+
+  // Subject bars
+  document.getElementById('dbSubjBars').innerHTML=[
+    {n:'Reasoning',p:74,c:'var(--blue)'},{n:'GK',p:68,c:'var(--green)'},
+    {n:'Quantitative',p:62,c:'var(--amber)'},{n:'English',p:81,c:'var(--blue2)'}
+  ].map(s=>`<div class="bar-row">
+    <div class="bar-lbl">${s.n}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${s.p}%;background:${s.c}"></div></div>
+    <div class="bar-val">${s.p}%</div></div>`).join('');
+
+  // Recent tests
+  const display=history.length>0?history.slice(0,5):[
+    {name:'Tier 1 Full Mock',score:142,total:200,acc:71,date:'Sample data'},
+  ];
+  document.getElementById('recentTests').innerHTML=display.map(t=>`
+    <div style="background:#fff;border:1.5px solid var(--g200);border-radius:var(--r);padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:130px">
+        <div style="font-size:14px;font-weight:700;font-family:var(--fd)">${t.name}</div>
+        <div style="font-size:11px;color:var(--g500);margin-top:2px">${t.date}</div>
+      </div>
+      <div style="display:flex;gap:1.25rem;align-items:center">
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue);font-family:var(--fd)">${typeof t.score==='number'?t.score.toFixed(1):t.score}</div><div style="font-size:11px;color:var(--g500)">/ ${t.total}</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--green);font-family:var(--fd)">${t.acc}%</div><div style="font-size:11px;color:var(--g500)">Accuracy</div></div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="startTest('tier1_full')">Retake</button>
+    </div>`).join('');
+}
+
+/* ================================================
+   PRACTICE TOPICS
+   ================================================ */
+const TOPICS=[
+  {n:"Analogies & Classification",s:"reasoning",done:8,total:10,t:"reasoning_mini"},
+  {n:"Number Series",s:"reasoning",done:6,total:10,t:"reasoning_mini"},
+  {n:"Coding-Decoding",s:"reasoning",done:7,total:10,t:"reasoning_mini"},
+  {n:"Blood Relations",s:"reasoning",done:5,total:10,t:"reasoning_mini"},
+  {n:"Direction & Distance",s:"reasoning",done:3,total:10,t:"reasoning_mini"},
+  {n:"History of India",s:"gk",done:9,total:10,t:"gk_mini"},
+  {n:"Indian Polity",s:"gk",done:7,total:10,t:"gk_mini"},
+  {n:"Geography",s:"gk",done:6,total:10,t:"gk_mini"},
+  {n:"Science GK",s:"gk",done:8,total:10,t:"gk_mini"},
+  {n:"Current Affairs 2025",s:"gk",done:4,total:10,t:"gk_mini"},
+  {n:"Percentage & Profit/Loss",s:"quant",done:9,total:10,t:"quant_mini"},
+  {n:"Time, Work & Pipes",s:"quant",done:7,total:10,t:"quant_mini"},
+  {n:"Mensuration",s:"quant",done:5,total:10,t:"quant_mini"},
+  {n:"Algebra & Trigonometry",s:"quant",done:4,total:10,t:"quant_mini"},
+  {n:"Data Interpretation",s:"quant",done:6,total:10,t:"quant_mini"},
+  {n:"Grammar & Error Spotting",s:"english",done:8,total:10,t:"tier2_english"},
+  {n:"Vocabulary & Synonyms",s:"english",done:9,total:10,t:"tier2_english"},
+  {n:"Reading Comprehension",s:"english",done:6,total:10,t:"tier2_english"},
+  {n:"Idioms & Phrases",s:"english",done:7,total:10,t:"tier2_english"},
+];
+const SUBJ_COLOR={reasoning:'var(--blue)',gk:'var(--green)',quant:'var(--amber)',english:'var(--blue2)'};
+
+function filterTopic(subj,el){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  renderTopics(subj);
+}
+function renderTopics(filter){
+  const data=filter==='all'?TOPICS:TOPICS.filter(t=>t.s===filter);
+  document.getElementById('topicGrid').innerHTML=data.map(t=>{
+    const p=Math.round(t.done/t.total*100);
+    return `<div class="topic-card" onclick="startTest('${t.t}')">
+      <h4>${t.n}</h4>
+      <div class="prog-mini"><div class="prog-mini-fill" style="width:${p}%;background:${SUBJ_COLOR[t.s]}"></div></div>
+      <div class="topic-meta"><span>${t.done}/${t.total}</span><span style="font-weight:700;color:${SUBJ_COLOR[t.s]}">${p}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ================================================
+   TOAST
+   ================================================ */
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ================================================
+   INIT
+   ================================================ */
+renderTopics('all');
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('examScreen').classList.contains('active')){
+    if(e.key==='ArrowRight') saveNext();
+    if(e.key==='1'||e.key==='A'||e.key==='a') pick(0);
+    if(e.key==='2'||e.key==='B'||e.key==='b') pick(1);
+    if(e.key==='3'||e.key==='C'||e.key==='c') pick(2);
+    if(e.key==='4'||e.key==='D'||e.key==='d') pick(3);
+  }
+});
+</script>
+</body>
+</html>
